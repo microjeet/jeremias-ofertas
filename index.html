@@ -1026,7 +1026,7 @@
               <span class="price-current">${p.price}</span>
               ${p.oldPrice ? `<span class="price-old">${p.oldPrice}</span>` : ''}
             </div>
-            <a class="card-cta ${pl.cta}" href="${p.link}" target="_blank" rel="nofollow noopener" onclick="trackClick('${p.id}','${p.platform}')">
+            <a class="card-cta ${pl.cta}" href="${p.link}" target="_blank" rel="nofollow noopener" onclick="trackClick('${p.id}','${p.platform}','${p.title.replace(/'/g,"")}')">
               Ver oferta ${pl.emoji}
             </a>
           </div>
@@ -1054,7 +1054,7 @@
                 ${p.oldPrice ? `<span class="featured-old">${p.oldPrice}</span>` : ''}
                 ${p.discount ? `<span class="card-discount" style="position:static">${p.discount}</span>` : ''}
               </div>
-              <a class="card-cta ${pl.cta}" href="${p.link}" target="_blank" rel="nofollow noopener" style="max-width:260px" onclick="trackClick('${p.id}_featured','${p.platform}')">
+              <a class="card-cta ${pl.cta}" href="${p.link}" target="_blank" rel="nofollow noopener" style="max-width:260px" onclick="trackClick('${p.id}_featured','${p.platform}','${p.title.replace(/'/g,"")}')">
                 Ver oferta completa ${pl.emoji}
               </a>
             </div>
@@ -1139,10 +1139,21 @@
     /* ============================================================
        TRACKING & TOAST
     ============================================================ */
-    function trackClick(id, platform) {
+    function trackClick(id, platform, titulo) {
+      // Registra clique no Google Sheets via Apps Script
+      fetch("https://script.google.com/macros/s/AKfycbyQ0I-InQsghgKk3jEHzRGSb_T9BBjITHaqq0bPykg558L7BYrB7aEsGsmLRvBpoFDe8g/exec", {
+        method: "POST",
+        mode: "no-cors",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+          id: id,
+          produto: titulo || id,
+          plataforma: platform,
+          url: window.location.href
+        })
+      }).catch(()=>{});
       showToast(`Redirecionando para oferta • ${platform} 🔗`);
-      // Aqui você pode adicionar Google Analytics, pixel FB, etc.
-      console.log('[afiliado] click', id, platform);
+      console.log('[afiliado] click', id, platform, titulo);
     }
 
     function showToast(msg) {
